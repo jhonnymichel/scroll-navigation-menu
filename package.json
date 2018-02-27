@@ -31,9 +31,10 @@
   },
   "homepage": "https://github.com/jhonnymichel/anchor-navigation-menu#readme",
   "devDependencies": {
-    "animated-scrollto": "^1.1.0",
+    "animated-scroll-to": "^1.1.8",
     "babel": "^6.23.0",
     "babel-loader": "^7.1.3",
+    "babel-plugin-transform-es2015-destructuring": "^6.23.0",
     "babel-preset-env": "^1.6.1",
     "html-webpack-plugin": "github:webpack-contrib/html-webpack-plugin",
     "webpack": "^4.0.1",

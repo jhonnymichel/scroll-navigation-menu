@@ -1,11 +1,11 @@
 import animateScrollTo from 'animated-scroll-to';
 import defaultSettings from './default-settings';
-import { isHidden } from './utils';
+import { isHidden, isScrollInRange, getScrollPosition } from './utils';
 
 class AnchorNavigation {
   constructor(settings = {}) {
     this.settings = { ...defaultSettings, ...settings};
-    this._targetsPositions = new WeakMap();
+    this._targetsRanges = new WeakMap();
     this._anchors = [];
 
     this.onAnchorClick = this.onAnchorClick.bind(this);
@@ -13,19 +13,22 @@ class AnchorNavigation {
     this._setCurrentHighlight = this._setCurrentHighlight.bind(this);
 
     window.addEventListener('resize', () => {
-      this._targetsPositions = new WeakMap();
+      this._targetsRanges = new WeakMap();
       this._anchors.forEach(this._mapAnchorToSectionPosition);
       this._setCurrentHighlight();
     });
   }
 
-  _toggleHighlight(anchor) {
+  _updateAnchorActiveState(anchor, active=true) {
     if (anchor && isHidden(anchor)) {
       return;
     }
-    this._anchors.forEach(anchor => anchor.classList.remove(this.settings.activeClass));
     if (anchor && anchor.classList) {
-      anchor.classList.add(this.settings.activeClass);
+      if (active) {
+        anchor.classList.add(this.settings.activeClass);
+      } else {
+        anchor.classList.remove(this.settings.activeClass);
+      }
     }
   }
 
@@ -39,7 +42,7 @@ class AnchorNavigation {
       return;
     }
     const anchorPosition = elementToScroll.getBoundingClientRect().top;
-    const positionToScroll = anchorPosition + (window.scrollY || window.pageYOffset);
+    const positionToScroll = anchorPosition + getScrollPosition();
     animateScrollTo(positionToScroll + this.settings.offset, {
       minDuration: this.settings.animationDuration, maxDuration: this.settings.animationDuration,
       onComplete() {
@@ -52,22 +55,25 @@ class AnchorNavigation {
     // this is needed since the href attr might have more than just the hash
     const targetAnchor = anchor.getAttribute('href').split("#")[1];
     const elementToScroll = document.getElementById(targetAnchor);
-    this._targetsPositions.set(anchor,
-      (elementToScroll.getBoundingClientRect().top + this.settings.offset) +
-      (window.scrollY || window.pageYOffset));
+    const elementBoundaries = elementToScroll.getBoundingClientRect();
+    const elementInitialPosition = (elementBoundaries.y + this.settings.offset) + getScrollPosition();
+    const elementEndPosition = elementInitialPosition + elementBoundaries.height;
+    this._targetsRanges.set(anchor, [elementInitialPosition, elementEndPosition]);
   }
 
   _setCurrentHighlight() {
     this._anchors.forEach(anchor => {
-      const anchorTargetPosition = this._targetsPositions.get(anchor);
-      if (anchorTargetPosition <= (window.scrollY || window.pageYOffset)) {
-        this._toggleHighlight(anchor);
+      const anchorTargetRange = this._targetsRanges.get(anchor);
+      if (isScrollInRange(anchorTargetRange)) {
+        this._updateAnchorActiveState(anchor);
+      } else {
+        this._updateAnchorActiveState(anchor, false);
       }
     });
   }
 
   _setupHighlights() {
-    this._targetsPositions = new WeakMap();
+    this._targetsRanges = new WeakMap();
     this._anchors.forEach(this._mapAnchorToSectionPosition);
     window.addEventListener('scroll', this._setCurrentHighlight, { passive: true });
   }
@@ -81,11 +87,13 @@ class AnchorNavigation {
 
   stop() {
     if (this._anchors && this._anchors.length) {
-      this._anchors.forEach(anchor => anchor.removeEventListener('click', this.onAnchorClick));
-      this._toggleHighlight();
+      this._anchors.forEach(anchor => {
+        anchor.removeEventListener('click', this.onAnchorClick)
+        this._updateAnchorActiveState(anchor, false);
+      });
     }
     window.removeEventListener('scroll', this._setCurrentHighlight, { passive: true });
-    this._targetsPositions = null;
+    this._targetsRanges = null;
     this._anchors = null;
   }
 }
