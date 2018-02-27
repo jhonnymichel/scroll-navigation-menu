@@ -2,7 +2,7 @@
   "name": "scroll-navigation-menu",
   "version": "0.1.0",
   "description": "A library to perform animated scrolling between sections and highlight the active section's <a> tag in the navigation menu",
-  "main": "dist/anchor-navigation-menu.js",
+  "main": "dist/scroll-navigation-menu.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server --inline --hot --config webpack.config.js",

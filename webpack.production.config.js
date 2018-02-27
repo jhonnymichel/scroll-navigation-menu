@@ -7,7 +7,7 @@ const productionConfig = {
   ...config,
   devtool: false,
   plugins: [],
-  output: { ...config.output, filename: 'anchor-navigation-menu.js' },
+  output: { ...config.output, filename: 'scroll-navigation-menu.js' },
   mode: 'production',
   optimization: {
     minimize: false
@@ -18,7 +18,7 @@ const productionMinConfig = {
   ...config,
   devtool: false,
   plugins: [],
-  output: { ...config.output, filename: 'anchor-navigation-menu.min.js' },
+  output: { ...config.output, filename: 'scroll-navigation-menu.min.js' },
   mode: 'production',
   optimization: {
     minimize: true

@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   entry: './src/js/index.js',
   output: {
-    filename: 'anchor-navigation-menu.js',
+    filename: 'scroll-navigation-menu.js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/'
   },
