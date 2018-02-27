@@ -1,0 +1,43 @@
+{
+  "name": "anchor-navigation-menu",
+  "version": "0.0.1",
+  "description": "A library to perform animated scrolling between sections and highlight the active section's <a> tag in the navigation menu",
+  "main": "dist/anchor-navigation-menu.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack-dev-server --inline --hot --config webpack.config.js",
+    "production": "webpack --progress --config webpack.production.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jhonnymichel/anchor-navigation-menu.git"
+  },
+  "keywords": [
+    "menu",
+    "anchor",
+    "scroll",
+    "anchors",
+    "animated",
+    "scroll",
+    "anchor",
+    "navigation",
+    "navigation",
+    "menu"
+  ],
+  "author": "Jhonny Michel <jhonnymichel@outlook.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jhonnymichel/anchor-navigation-menu/issues"
+  },
+  "homepage": "https://github.com/jhonnymichel/anchor-navigation-menu#readme",
+  "devDependencies": {
+    "animated-scrollto": "^1.1.0",
+    "babel": "^6.23.0",
+    "babel-loader": "^7.1.3",
+    "babel-preset-env": "^1.6.1",
+    "html-webpack-plugin": "github:webpack-contrib/html-webpack-plugin",
+    "webpack": "^4.0.1",
+    "webpack-cli": "^2.0.9",
+    "webpack-dev-server": "^3.0.0"
+  }
+}
