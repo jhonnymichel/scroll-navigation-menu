@@ -268,6 +268,8 @@ var animated_scroll_to_default = /*#__PURE__*/__webpack_require__.n(animated_scr
   offset: 0
 });
 // CONCATENATED MODULE: ./src/js/utils.js
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 function isHidden(anchor) {
   var _anchor$getBoundingCl = anchor.getBoundingClientRect(),
       x = _anchor$getBoundingCl.x,
@@ -276,6 +278,18 @@ function isHidden(anchor) {
       height = _anchor$getBoundingCl.height;
 
   return !(x + y + width + height);
+}
+
+function isScrollInRange(range) {
+  var _range = _slicedToArray(range, 2),
+      start = _range[0],
+      end = _range[1];
+
+  return start <= getScrollPosition() && end > getScrollPosition();
+}
+
+function getScrollPosition() {
+  return window.scrollY || window.pageYOffset;
 }
 // CONCATENATED MODULE: ./src/js/anchor-navigation-menu.js
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -299,7 +313,7 @@ var anchor_navigation_menu_AnchorNavigation = function () {
     _classCallCheck(this, AnchorNavigation);
 
     this.settings = _extends({}, default_settings, settings);
-    this._targetsPositions = new WeakMap();
+    this._targetsRanges = new WeakMap();
     this._anchors = [];
 
     this.onAnchorClick = this.onAnchorClick.bind(this);
@@ -307,25 +321,26 @@ var anchor_navigation_menu_AnchorNavigation = function () {
     this._setCurrentHighlight = this._setCurrentHighlight.bind(this);
 
     window.addEventListener('resize', function () {
-      _this._targetsPositions = new WeakMap();
+      _this._targetsRanges = new WeakMap();
       _this._anchors.forEach(_this._mapAnchorToSectionPosition);
       _this._setCurrentHighlight();
     });
   }
 
   _createClass(AnchorNavigation, [{
-    key: '_toggleHighlight',
-    value: function _toggleHighlight(anchor) {
-      var _this2 = this;
+    key: '_updateAnchorActiveState',
+    value: function _updateAnchorActiveState(anchor) {
+      var active = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
       if (anchor && isHidden(anchor)) {
         return;
       }
-      this._anchors.forEach(function (anchor) {
-        return anchor.classList.remove(_this2.settings.activeClass);
-      });
       if (anchor && anchor.classList) {
-        anchor.classList.add(this.settings.activeClass);
+        if (active) {
+          anchor.classList.add(this.settings.activeClass);
+        } else {
+          anchor.classList.remove(this.settings.activeClass);
+        }
       }
     }
   }, {
@@ -340,7 +355,7 @@ var anchor_navigation_menu_AnchorNavigation = function () {
         return;
       }
       var anchorPosition = elementToScroll.getBoundingClientRect().top;
-      var positionToScroll = anchorPosition + (window.scrollY || window.pageYOffset);
+      var positionToScroll = anchorPosition + getScrollPosition();
       animated_scroll_to_default()(positionToScroll + this.settings.offset, {
         minDuration: this.settings.animationDuration, maxDuration: this.settings.animationDuration,
         onComplete: function onComplete() {
@@ -354,35 +369,40 @@ var anchor_navigation_menu_AnchorNavigation = function () {
       // this is needed since the href attr might have more than just the hash
       var targetAnchor = anchor.getAttribute('href').split("#")[1];
       var elementToScroll = document.getElementById(targetAnchor);
-      this._targetsPositions.set(anchor, elementToScroll.getBoundingClientRect().top + this.settings.offset + (window.scrollY || window.pageYOffset));
+      var elementBoundaries = elementToScroll.getBoundingClientRect();
+      var elementInitialPosition = elementBoundaries.y + this.settings.offset + getScrollPosition();
+      var elementEndPosition = elementInitialPosition + elementBoundaries.height;
+      this._targetsRanges.set(anchor, [elementInitialPosition, elementEndPosition]);
     }
   }, {
     key: '_setCurrentHighlight',
     value: function _setCurrentHighlight() {
-      var _this3 = this;
+      var _this2 = this;
 
       this._anchors.forEach(function (anchor) {
-        var anchorTargetPosition = _this3._targetsPositions.get(anchor);
-        if (anchorTargetPosition <= (window.scrollY || window.pageYOffset)) {
-          _this3._toggleHighlight(anchor);
+        var anchorTargetRange = _this2._targetsRanges.get(anchor);
+        if (isScrollInRange(anchorTargetRange)) {
+          _this2._updateAnchorActiveState(anchor);
+        } else {
+          _this2._updateAnchorActiveState(anchor, false);
         }
       });
     }
   }, {
     key: '_setupHighlights',
     value: function _setupHighlights() {
-      this._targetsPositions = new WeakMap();
+      this._targetsRanges = new WeakMap();
       this._anchors.forEach(this._mapAnchorToSectionPosition);
       window.addEventListener('scroll', this._setCurrentHighlight, { passive: true });
     }
   }, {
     key: 'start',
     value: function start() {
-      var _this4 = this;
+      var _this3 = this;
 
       this._anchors = [].concat(_toConsumableArray(document.querySelectorAll(this.settings.linksSelector)));
       this._anchors.forEach(function (anchor) {
-        return anchor.addEventListener('click', _this4.onAnchorClick);
+        return anchor.addEventListener('click', _this3.onAnchorClick);
       });
       this._setupHighlights();
       this._setCurrentHighlight();
@@ -390,16 +410,16 @@ var anchor_navigation_menu_AnchorNavigation = function () {
   }, {
     key: 'stop',
     value: function stop() {
-      var _this5 = this;
+      var _this4 = this;
 
       if (this._anchors && this._anchors.length) {
         this._anchors.forEach(function (anchor) {
-          return anchor.removeEventListener('click', _this5.onAnchorClick);
+          anchor.removeEventListener('click', _this4.onAnchorClick);
+          _this4._updateAnchorActiveState(anchor, false);
         });
-        this._toggleHighlight();
       }
       window.removeEventListener('scroll', this._setCurrentHighlight, { passive: true });
-      this._targetsPositions = null;
+      this._targetsRanges = null;
       this._anchors = null;
     }
   }]);
