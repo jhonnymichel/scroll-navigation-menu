@@ -264,7 +264,8 @@ var animated_scroll_to_default = /*#__PURE__*/__webpack_require__.n(animated_scr
 /* harmony default export */ var default_settings = ({
   animationDuration: 233,
   activeClass: 'active',
-  linksSelector: '.scroll'
+  linksSelector: '.scroll',
+  offset: 0
 });
 // CONCATENATED MODULE: ./src/js/utils.js
 function isHidden(anchor) {
@@ -338,7 +339,9 @@ var anchor_navigation_menu_AnchorNavigation = function () {
       if (!elementToScroll) {
         return;
       }
-      animated_scroll_to_default()(elementToScroll, {
+      var anchorPosition = elementToScroll.getBoundingClientRect().top;
+      var positionToScroll = anchorPosition + (window.scrollY || window.pageYOffset);
+      animated_scroll_to_default()(positionToScroll + this.settings.offset, {
         minDuration: this.settings.animationDuration, maxDuration: this.settings.animationDuration,
         onComplete: function onComplete() {
           anchor.blur();
@@ -351,7 +354,7 @@ var anchor_navigation_menu_AnchorNavigation = function () {
       // this is needed since the href attr might have more than just the hash
       var targetAnchor = anchor.getAttribute('href').split("#")[1];
       var elementToScroll = document.getElementById(targetAnchor);
-      this._targetsPositions.set(anchor, elementToScroll.getBoundingClientRect().top + (window.scrollY || window.pageYOffset));
+      this._targetsPositions.set(anchor, elementToScroll.getBoundingClientRect().top + this.settings.offset + (window.scrollY || window.pageYOffset));
     }
   }, {
     key: '_setCurrentHighlight',

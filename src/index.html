@@ -89,7 +89,8 @@
     document.addEventListener('DOMContentLoaded', function() {
       const anchorNavigation = new AnchorNavigation({
         activeClass: 'active',
-        linksSelector: '.scroll'
+        linksSelector: '.scroll',
+        offset: -100,
       });
       anchorNavigation.start();
     });

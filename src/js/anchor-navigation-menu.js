@@ -38,7 +38,9 @@ class AnchorNavigation {
     if (!elementToScroll) {
       return;
     }
-    animateScrollTo(elementToScroll, {
+    const anchorPosition = elementToScroll.getBoundingClientRect().top;
+    const positionToScroll = anchorPosition + (window.scrollY || window.pageYOffset);
+    animateScrollTo(positionToScroll + this.settings.offset, {
       minDuration: this.settings.animationDuration, maxDuration: this.settings.animationDuration,
       onComplete() {
         anchor.blur();
@@ -50,7 +52,9 @@ class AnchorNavigation {
     // this is needed since the href attr might have more than just the hash
     const targetAnchor = anchor.getAttribute('href').split("#")[1];
     const elementToScroll = document.getElementById(targetAnchor);
-    this._targetsPositions.set(anchor, elementToScroll.getBoundingClientRect().top + (window.scrollY || window.pageYOffset));
+    this._targetsPositions.set(anchor,
+      (elementToScroll.getBoundingClientRect().top + this.settings.offset) +
+      (window.scrollY || window.pageYOffset));
   }
 
   _setCurrentHighlight() {
