@@ -2,7 +2,7 @@ import animateScrollTo from 'animated-scroll-to';
 import defaultSettings from './default-settings';
 import { isHidden, isScrollInRange, getScrollPosition } from './utils';
 
-class AnchorNavigation {
+class ScrollNavigation {
   constructor(settings = {}) {
     this.settings = { ...defaultSettings, ...settings};
     this._targetsRanges = new WeakMap();
@@ -98,4 +98,4 @@ class AnchorNavigation {
   }
 }
 
-export default AnchorNavigation;
+export default ScrollNavigation;

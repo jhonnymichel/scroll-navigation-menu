@@ -1,3 +1,3 @@
-import AnchorNavigation from './anchor-navigation-menu';
-window.AnchorNavigation = AnchorNavigation;
-export default AnchorNavigation;
+import ScrollNavigation from './scroll-navigation-menu';
+window.ScrollNavigation = ScrollNavigation;
+export default ScrollNavigation;

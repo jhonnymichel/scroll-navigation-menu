@@ -291,7 +291,7 @@ function isScrollInRange(range) {
 function getScrollPosition() {
   return window.scrollY || window.pageYOffset;
 }
-// CONCATENATED MODULE: ./src/js/anchor-navigation-menu.js
+// CONCATENATED MODULE: ./src/js/scroll-navigation-menu.js
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -304,13 +304,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 
 
-var anchor_navigation_menu_AnchorNavigation = function () {
-  function AnchorNavigation() {
+var scroll_navigation_menu_ScrollNavigation = function () {
+  function ScrollNavigation() {
     var _this = this;
 
     var settings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-    _classCallCheck(this, AnchorNavigation);
+    _classCallCheck(this, ScrollNavigation);
 
     this.settings = _extends({}, default_settings, settings);
     this._targetsRanges = new WeakMap();
@@ -327,7 +327,7 @@ var anchor_navigation_menu_AnchorNavigation = function () {
     });
   }
 
-  _createClass(AnchorNavigation, [{
+  _createClass(ScrollNavigation, [{
     key: '_updateAnchorActiveState',
     value: function _updateAnchorActiveState(anchor) {
       var active = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
@@ -424,14 +424,14 @@ var anchor_navigation_menu_AnchorNavigation = function () {
     }
   }]);
 
-  return AnchorNavigation;
+  return ScrollNavigation;
 }();
 
-/* harmony default export */ var anchor_navigation_menu = (anchor_navigation_menu_AnchorNavigation);
+/* harmony default export */ var scroll_navigation_menu = (scroll_navigation_menu_ScrollNavigation);
 // CONCATENATED MODULE: ./src/js/index.js
 
-window.AnchorNavigation = anchor_navigation_menu;
-/* harmony default export */ var js = __webpack_exports__["default"] = (anchor_navigation_menu);
+window.ScrollNavigation = scroll_navigation_menu;
+/* harmony default export */ var js = __webpack_exports__["default"] = (scroll_navigation_menu);
 
 /***/ })
 /******/ ]);

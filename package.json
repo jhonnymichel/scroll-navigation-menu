@@ -1,5 +1,5 @@
 {
-  "name": "anchor-navigation-menu",
+  "name": "scroll-navigation-menu",
   "version": "0.1.0",
   "description": "A library to perform animated scrolling between sections and highlight the active section's <a> tag in the navigation menu",
   "main": "dist/anchor-navigation-menu.js",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jhonnymichel/anchor-navigation-menu.git"
+    "url": "git+https://github.com/jhonnymichel/scroll-navigation-menu.git"
   },
   "keywords": [
     "menu",
@@ -27,9 +27,9 @@
   "author": "Jhonny Michel <jhonnymichel@outlook.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jhonnymichel/anchor-navigation-menu/issues"
+    "url": "https://github.com/jhonnymichel/scroll-navigation-menu/issues"
   },
-  "homepage": "https://github.com/jhonnymichel/anchor-navigation-menu#readme",
+  "homepage": "https://github.com/jhonnymichel/scroll-navigation-menu#readme",
   "devDependencies": {
     "animated-scroll-to": "^1.1.8",
     "babel": "^6.23.0",
