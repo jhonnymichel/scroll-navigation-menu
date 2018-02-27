@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
+  <title>Anchor Navigation Menu demo</title>
   <style>
     html, body {
       padding: 0px;
@@ -28,6 +28,17 @@
       align-items: center;
       background-color: lightgray;
       box-shadow: rgba(0, 0, 0, .2) 1px 1px;
+    }
+
+    nav.top {
+      top: 0;
+      left: 0;
+    }
+
+    nav.bottom {
+      bottom: 0;
+      left: 0;
+      margin-bottom: 0px;
     }
 
     ul {
@@ -68,10 +79,16 @@
     section#green {
       background-color: lightseagreen;
     }
+
+    @media(max-width: 768px) {
+      body {
+        font-size: 1em;
+      }
+    }
   </style>
 </head>
 <body>
-  <nav>
+  <nav class="top">
     <ul>
       <li><a class="scroll" href="#top">top</a></li>
       <li><a class="scroll" href="#blue">blue</a></li>
@@ -85,6 +102,14 @@
     <section id="red"></section>
     <section id="green"></section>
   </div>
+  <nav class="bottom">
+    <ul>
+      <li><a class="scroll" href="#top">top</a></li>
+      <li><a class="scroll" href="#blue">blue</a></li>
+      <li><a class="scroll" href="#red">red</a></li>
+      <li><a class="scroll" href="#green">green</a></li>
+    </ul>
+  </nav>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const anchorNavigation = new AnchorNavigation({
