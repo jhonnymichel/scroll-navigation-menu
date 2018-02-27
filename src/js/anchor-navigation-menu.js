@@ -6,16 +6,16 @@ class AnchorNavigation {
   constructor(settings = {}) {
     this.settings = { ...defaultSettings, ...settings};
     this._targetsPositions = new WeakMap();
-    this._highlightableAnchors = [];
     this._anchors = [];
 
     this.onAnchorClick = this.onAnchorClick.bind(this);
     this._mapAnchorToSectionPosition = this._mapAnchorToSectionPosition.bind(this);
-    this._onUserScroll = this._onUserScroll.bind(this);
+    this._setCurrentHighlight = this._setCurrentHighlight.bind(this);
 
     window.addEventListener('resize', () => {
       this._targetsPositions = new WeakMap();
       this._anchors.forEach(this._mapAnchorToSectionPosition);
+      this._setCurrentHighlight();
     });
   }
 
@@ -32,9 +32,9 @@ class AnchorNavigation {
   onAnchorClick(e) {
     e.preventDefault();
     const anchor = e.currentTarget;
-    // this is needed since the href attr starts with an /
-    const targetAnchor = anchor.getAttribute('href').slice(1);
-    const elementToScroll = document.querySelector(targetAnchor);
+    // this is needed since the href attr might have more than just the hash
+    const targetAnchor = anchor.getAttribute('href').split("#")[1];
+    const elementToScroll = document.getElementById(targetAnchor);
     if (!elementToScroll) {
       return;
     }
@@ -47,14 +47,14 @@ class AnchorNavigation {
   }
 
   _mapAnchorToSectionPosition(anchor) {
-    // this is needed since the href attr starts with an /
-    const targetAnchor = anchor.getAttribute('href').slice(1);
-    const elementToScroll = document.querySelector(targetAnchor);
-    this._targetsPositions.set(anchor, elementToScroll.getBoundingClientRect().top);
+    // this is needed since the href attr might have more than just the hash
+    const targetAnchor = anchor.getAttribute('href').split("#")[1];
+    const elementToScroll = document.getElementById(targetAnchor);
+    this._targetsPositions.set(anchor, elementToScroll.getBoundingClientRect().top + (window.scrollY || window.pageYOffset));
   }
 
-  _onUserScroll() {
-    this._highlightableAnchors.forEach(anchor => {
+  _setCurrentHighlight() {
+    this._anchors.forEach(anchor => {
       const anchorTargetPosition = this._targetsPositions.get(anchor);
       if (anchorTargetPosition <= (window.scrollY || window.pageYOffset)) {
         this._toggleHighlight(anchor);
@@ -65,13 +65,14 @@ class AnchorNavigation {
   _setupHighlights() {
     this._targetsPositions = new WeakMap();
     this._anchors.forEach(this._mapAnchorToSectionPosition);
-    window.addEventListener('scroll', this._onUserScroll, { passive: true });
+    window.addEventListener('scroll', this._setCurrentHighlight, { passive: true });
   }
 
   start() {
     this._anchors = [ ...document.querySelectorAll(this.settings.linksSelector) ];
     this._anchors.forEach(anchor => anchor.addEventListener('click', this.onAnchorClick));
     this._setupHighlights();
+    this._setCurrentHighlight();
   }
 
   stop() {
@@ -79,7 +80,7 @@ class AnchorNavigation {
       this._anchors.forEach(anchor => anchor.removeEventListener('click', this.onAnchorClick));
       this._toggleHighlight();
     }
-    window.removeEventListener('scroll', this._onUserScroll, { passive: true });
+    window.removeEventListener('scroll', this._setCurrentHighlight, { passive: true });
     this._targetsPositions = null;
     this._anchors = null;
   }

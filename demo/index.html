@@ -5,8 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
+  <style>
+    html, body {
+      padding: 0px;
+      margin: 0px;
+    }
+
+    body {
+      font-family: sans-serif;
+      color: black;
+      font-weight: bold;
+      font-size: 2em;
+    }
+
+    nav {
+      position: fixed;
+      margin-bottom: 100px;
+      width: 100%;
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: lightgray;
+      box-shadow: rgba(0, 0, 0, .2) 1px 1px;
+    }
+
+    ul {
+      width: 50%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0px;
+      margin: 0px;
+    }
+
+    li {
+      list-style-type: none;
+    }
+
+    li a {
+      text-transform: uppercase;
+      text-decoration: none;
+      color: midnightblue;
+    }
+
+    li a.active {
+      color: orange;
+    }
+
+    section {
+      height: 500px;
+      height: 100vh;
+    }
+
+    section#blue {
+      background-color: mediumblue;
+    }
+
+    section#red {
+      background-color: maroon;
+    }
+
+    section#green {
+      background-color: lightseagreen;
+    }
+  </style>
 </head>
 <body>
-  Olá, mundo
+  <nav>
+    <ul>
+      <li><a class="scroll" href="#top">top</a></li>
+      <li><a class="scroll" href="#blue">blue</a></li>
+      <li><a class="scroll" href="#red">red</a></li>
+      <li><a class="scroll" href="#green">green</a></li>
+    </ul>
+  </nav>
+  <div>
+    <section id="top"></section>
+    <section id="blue"></section>
+    <section id="red"></section>
+    <section id="green"></section>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const anchorNavigation = new AnchorNavigation({
+        activeClass: 'active',
+        linksSelector: '.scroll'
+      });
+      anchorNavigation.start();
+    });
+  </script>
 <script type="text/javascript" src="/anchor-navigation-menu.js"></script></body>
 </html>

@@ -299,16 +299,16 @@ var anchor_navigation_menu_AnchorNavigation = function () {
 
     this.settings = _extends({}, default_settings, settings);
     this._targetsPositions = new WeakMap();
-    this._highlightableAnchors = [];
     this._anchors = [];
 
     this.onAnchorClick = this.onAnchorClick.bind(this);
     this._mapAnchorToSectionPosition = this._mapAnchorToSectionPosition.bind(this);
-    this._onUserScroll = this._onUserScroll.bind(this);
+    this._setCurrentHighlight = this._setCurrentHighlight.bind(this);
 
     window.addEventListener('resize', function () {
       _this._targetsPositions = new WeakMap();
       _this._anchors.forEach(_this._mapAnchorToSectionPosition);
+      _this._setCurrentHighlight();
     });
   }
 
@@ -332,9 +332,9 @@ var anchor_navigation_menu_AnchorNavigation = function () {
     value: function onAnchorClick(e) {
       e.preventDefault();
       var anchor = e.currentTarget;
-      // this is needed since the href attr starts with an /
-      var targetAnchor = anchor.getAttribute('href').slice(1);
-      var elementToScroll = document.querySelector(targetAnchor);
+      // this is needed since the href attr might have more than just the hash
+      var targetAnchor = anchor.getAttribute('href').split("#")[1];
+      var elementToScroll = document.getElementById(targetAnchor);
       if (!elementToScroll) {
         return;
       }
@@ -348,17 +348,17 @@ var anchor_navigation_menu_AnchorNavigation = function () {
   }, {
     key: '_mapAnchorToSectionPosition',
     value: function _mapAnchorToSectionPosition(anchor) {
-      // this is needed since the href attr starts with an /
-      var targetAnchor = anchor.getAttribute('href').slice(1);
-      var elementToScroll = document.querySelector(targetAnchor);
-      this._targetsPositions.set(anchor, elementToScroll.getBoundingClientRect().top);
+      // this is needed since the href attr might have more than just the hash
+      var targetAnchor = anchor.getAttribute('href').split("#")[1];
+      var elementToScroll = document.getElementById(targetAnchor);
+      this._targetsPositions.set(anchor, elementToScroll.getBoundingClientRect().top + (window.scrollY || window.pageYOffset));
     }
   }, {
-    key: '_onUserScroll',
-    value: function _onUserScroll() {
+    key: '_setCurrentHighlight',
+    value: function _setCurrentHighlight() {
       var _this3 = this;
 
-      this._highlightableAnchors.forEach(function (anchor) {
+      this._anchors.forEach(function (anchor) {
         var anchorTargetPosition = _this3._targetsPositions.get(anchor);
         if (anchorTargetPosition <= (window.scrollY || window.pageYOffset)) {
           _this3._toggleHighlight(anchor);
@@ -370,7 +370,7 @@ var anchor_navigation_menu_AnchorNavigation = function () {
     value: function _setupHighlights() {
       this._targetsPositions = new WeakMap();
       this._anchors.forEach(this._mapAnchorToSectionPosition);
-      window.addEventListener('scroll', this._onUserScroll, { passive: true });
+      window.addEventListener('scroll', this._setCurrentHighlight, { passive: true });
     }
   }, {
     key: 'start',
@@ -382,6 +382,7 @@ var anchor_navigation_menu_AnchorNavigation = function () {
         return anchor.addEventListener('click', _this4.onAnchorClick);
       });
       this._setupHighlights();
+      this._setCurrentHighlight();
     }
   }, {
     key: 'stop',
@@ -394,7 +395,7 @@ var anchor_navigation_menu_AnchorNavigation = function () {
         });
         this._toggleHighlight();
       }
-      window.removeEventListener('scroll', this._onUserScroll, { passive: true });
+      window.removeEventListener('scroll', this._setCurrentHighlight, { passive: true });
       this._targetsPositions = null;
       this._anchors = null;
     }
@@ -406,7 +407,7 @@ var anchor_navigation_menu_AnchorNavigation = function () {
 /* harmony default export */ var anchor_navigation_menu = (anchor_navigation_menu_AnchorNavigation);
 // CONCATENATED MODULE: ./src/js/index.js
 
-
+window.AnchorNavigation = anchor_navigation_menu;
 /* harmony default export */ var js = __webpack_exports__["default"] = (anchor_navigation_menu);
 
 /***/ })
