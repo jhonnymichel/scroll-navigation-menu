@@ -1,3 +1,2 @@
 import ScrollNavigation from './scroll-navigation-menu';
-window.ScrollNavigation = ScrollNavigation;
-export default ScrollNavigation;
+module.exports = ScrollNavigation;
