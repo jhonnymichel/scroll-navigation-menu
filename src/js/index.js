@@ -1,2 +1,2 @@
 import ScrollNavigation from './scroll-navigation-menu';
-module.exports = ScrollNavigation;
+module.exports = require('./scroll-navigation-menu').default;

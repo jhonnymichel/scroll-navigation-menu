@@ -7,7 +7,9 @@ module.exports = {
   output: {
     filename: 'scroll-navigation-menu.js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: '/'
+    publicPath: '/',
+    library: 'ScrollNavigation',
+    libraryTarget: 'umd'
   },
   mode: 'development',
   devtool: 'source-map',

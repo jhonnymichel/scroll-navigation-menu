@@ -1,4 +1,14 @@
-/******/ (function(modules) { // webpackBootstrap
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else if(typeof exports === 'object')
+		exports["ScrollNavigation"] = factory();
+	else
+		root["ScrollNavigation"] = factory();
+})(window, function() {
+return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -80,6 +90,162 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _animatedScrollTo = __webpack_require__(3);
+
+var _animatedScrollTo2 = _interopRequireDefault(_animatedScrollTo);
+
+var _defaultSettings = __webpack_require__(2);
+
+var _defaultSettings2 = _interopRequireDefault(_defaultSettings);
+
+var _utils = __webpack_require__(1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var ScrollNavigation = function () {
+  function ScrollNavigation() {
+    var _this = this;
+
+    var settings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+    _classCallCheck(this, ScrollNavigation);
+
+    this.settings = _extends({}, _defaultSettings2.default, settings);
+    this._targetsRanges = new WeakMap();
+    this._anchors = [];
+
+    this.onAnchorClick = this.onAnchorClick.bind(this);
+    this._mapAnchorToSectionPosition = this._mapAnchorToSectionPosition.bind(this);
+    this._setCurrentHighlight = this._setCurrentHighlight.bind(this);
+
+    window.addEventListener('resize', function () {
+      _this._targetsRanges = new WeakMap();
+      _this._anchors.forEach(_this._mapAnchorToSectionPosition);
+      _this._setCurrentHighlight();
+    });
+  }
+
+  _createClass(ScrollNavigation, [{
+    key: '_updateAnchorActiveState',
+    value: function _updateAnchorActiveState(anchor) {
+      var active = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+      if (anchor && (0, _utils.isHidden)(anchor)) {
+        return;
+      }
+      if (anchor && anchor.classList) {
+        if (active) {
+          anchor.classList.add(this.settings.activeClass);
+        } else {
+          anchor.classList.remove(this.settings.activeClass);
+        }
+      }
+    }
+  }, {
+    key: 'onAnchorClick',
+    value: function onAnchorClick(e) {
+      e.preventDefault();
+      var anchor = e.currentTarget;
+      // this is needed since the href attr might have more than just the hash
+      var targetAnchor = anchor.getAttribute('href').split("#")[1];
+      var elementToScroll = document.getElementById(targetAnchor);
+      if (!elementToScroll) {
+        return;
+      }
+      var anchorPosition = elementToScroll.getBoundingClientRect().top;
+      var positionToScroll = anchorPosition + (0, _utils.getScrollPosition)();
+      (0, _animatedScrollTo2.default)(positionToScroll + this.settings.offset, {
+        minDuration: this.settings.animationDuration, maxDuration: this.settings.animationDuration,
+        onComplete: function onComplete() {
+          anchor.blur();
+        }
+      });
+    }
+  }, {
+    key: '_mapAnchorToSectionPosition',
+    value: function _mapAnchorToSectionPosition(anchor) {
+      // this is needed since the href attr might have more than just the hash
+      var targetAnchor = anchor.getAttribute('href').split("#")[1];
+      var elementToScroll = document.getElementById(targetAnchor);
+      var elementBoundaries = elementToScroll.getBoundingClientRect();
+      var elementInitialPosition = elementBoundaries.y + this.settings.offset + (0, _utils.getScrollPosition)();
+      var elementEndPosition = elementInitialPosition + elementBoundaries.height;
+      this._targetsRanges.set(anchor, [elementInitialPosition, elementEndPosition]);
+    }
+  }, {
+    key: '_setCurrentHighlight',
+    value: function _setCurrentHighlight() {
+      var _this2 = this;
+
+      this._anchors.forEach(function (anchor) {
+        var anchorTargetRange = _this2._targetsRanges.get(anchor);
+        if ((0, _utils.isScrollInRange)(anchorTargetRange)) {
+          _this2._updateAnchorActiveState(anchor);
+        } else {
+          _this2._updateAnchorActiveState(anchor, false);
+        }
+      });
+    }
+  }, {
+    key: '_setupHighlights',
+    value: function _setupHighlights() {
+      this._targetsRanges = new WeakMap();
+      this._anchors.forEach(this._mapAnchorToSectionPosition);
+      window.addEventListener('scroll', this._setCurrentHighlight, { passive: true });
+    }
+  }, {
+    key: 'start',
+    value: function start() {
+      var _this3 = this;
+
+      this._anchors = [].concat(_toConsumableArray(document.querySelectorAll(this.settings.linksSelector)));
+      this._anchors.forEach(function (anchor) {
+        return anchor.addEventListener('click', _this3.onAnchorClick);
+      });
+      this._setupHighlights();
+      this._setCurrentHighlight();
+    }
+  }, {
+    key: 'stop',
+    value: function stop() {
+      var _this4 = this;
+
+      if (this._anchors && this._anchors.length) {
+        this._anchors.forEach(function (anchor) {
+          anchor.removeEventListener('click', _this4.onAnchorClick);
+          _this4._updateAnchorActiveState(anchor, false);
+        });
+      }
+      window.removeEventListener('scroll', this._setCurrentHighlight, { passive: true });
+      this._targetsRanges = null;
+      this._anchors = null;
+    }
+  }]);
+
+  return ScrollNavigation;
+}();
+
+exports.default = ScrollNavigation;
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 exports.isHidden = isHidden;
@@ -108,7 +274,7 @@ function getScrollPosition() {
 }
 
 /***/ }),
-/* 1 */
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -125,7 +291,7 @@ exports.default = {
 };
 
 /***/ }),
-/* 2 */
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -305,180 +471,20 @@ exports.default = {
 }).call(undefined);
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _animatedScrollTo = __webpack_require__(2);
-
-var _animatedScrollTo2 = _interopRequireDefault(_animatedScrollTo);
-
-var _defaultSettings = __webpack_require__(1);
-
-var _defaultSettings2 = _interopRequireDefault(_defaultSettings);
-
-var _utils = __webpack_require__(0);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var ScrollNavigation = function () {
-  function ScrollNavigation() {
-    var _this = this;
-
-    var settings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
-    _classCallCheck(this, ScrollNavigation);
-
-    this.settings = _extends({}, _defaultSettings2.default, settings);
-    this._targetsRanges = new WeakMap();
-    this._anchors = [];
-
-    this.onAnchorClick = this.onAnchorClick.bind(this);
-    this._mapAnchorToSectionPosition = this._mapAnchorToSectionPosition.bind(this);
-    this._setCurrentHighlight = this._setCurrentHighlight.bind(this);
-
-    window.addEventListener('resize', function () {
-      _this._targetsRanges = new WeakMap();
-      _this._anchors.forEach(_this._mapAnchorToSectionPosition);
-      _this._setCurrentHighlight();
-    });
-  }
-
-  _createClass(ScrollNavigation, [{
-    key: '_updateAnchorActiveState',
-    value: function _updateAnchorActiveState(anchor) {
-      var active = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
-      if (anchor && (0, _utils.isHidden)(anchor)) {
-        return;
-      }
-      if (anchor && anchor.classList) {
-        if (active) {
-          anchor.classList.add(this.settings.activeClass);
-        } else {
-          anchor.classList.remove(this.settings.activeClass);
-        }
-      }
-    }
-  }, {
-    key: 'onAnchorClick',
-    value: function onAnchorClick(e) {
-      e.preventDefault();
-      var anchor = e.currentTarget;
-      // this is needed since the href attr might have more than just the hash
-      var targetAnchor = anchor.getAttribute('href').split("#")[1];
-      var elementToScroll = document.getElementById(targetAnchor);
-      if (!elementToScroll) {
-        return;
-      }
-      var anchorPosition = elementToScroll.getBoundingClientRect().top;
-      var positionToScroll = anchorPosition + (0, _utils.getScrollPosition)();
-      (0, _animatedScrollTo2.default)(positionToScroll + this.settings.offset, {
-        minDuration: this.settings.animationDuration, maxDuration: this.settings.animationDuration,
-        onComplete: function onComplete() {
-          anchor.blur();
-        }
-      });
-    }
-  }, {
-    key: '_mapAnchorToSectionPosition',
-    value: function _mapAnchorToSectionPosition(anchor) {
-      // this is needed since the href attr might have more than just the hash
-      var targetAnchor = anchor.getAttribute('href').split("#")[1];
-      var elementToScroll = document.getElementById(targetAnchor);
-      var elementBoundaries = elementToScroll.getBoundingClientRect();
-      var elementInitialPosition = elementBoundaries.y + this.settings.offset + (0, _utils.getScrollPosition)();
-      var elementEndPosition = elementInitialPosition + elementBoundaries.height;
-      this._targetsRanges.set(anchor, [elementInitialPosition, elementEndPosition]);
-    }
-  }, {
-    key: '_setCurrentHighlight',
-    value: function _setCurrentHighlight() {
-      var _this2 = this;
-
-      this._anchors.forEach(function (anchor) {
-        var anchorTargetRange = _this2._targetsRanges.get(anchor);
-        if ((0, _utils.isScrollInRange)(anchorTargetRange)) {
-          _this2._updateAnchorActiveState(anchor);
-        } else {
-          _this2._updateAnchorActiveState(anchor, false);
-        }
-      });
-    }
-  }, {
-    key: '_setupHighlights',
-    value: function _setupHighlights() {
-      this._targetsRanges = new WeakMap();
-      this._anchors.forEach(this._mapAnchorToSectionPosition);
-      window.addEventListener('scroll', this._setCurrentHighlight, { passive: true });
-    }
-  }, {
-    key: 'start',
-    value: function start() {
-      var _this3 = this;
-
-      this._anchors = [].concat(_toConsumableArray(document.querySelectorAll(this.settings.linksSelector)));
-      this._anchors.forEach(function (anchor) {
-        return anchor.addEventListener('click', _this3.onAnchorClick);
-      });
-      this._setupHighlights();
-      this._setCurrentHighlight();
-    }
-  }, {
-    key: 'stop',
-    value: function stop() {
-      var _this4 = this;
-
-      if (this._anchors && this._anchors.length) {
-        this._anchors.forEach(function (anchor) {
-          anchor.removeEventListener('click', _this4.onAnchorClick);
-          _this4._updateAnchorActiveState(anchor, false);
-        });
-      }
-      window.removeEventListener('scroll', this._setCurrentHighlight, { passive: true });
-      this._targetsRanges = null;
-      this._anchors = null;
-    }
-  }]);
-
-  return ScrollNavigation;
-}();
-
-exports.default = ScrollNavigation;
-
-/***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _scrollNavigationMenu = __webpack_require__(3);
+var _scrollNavigationMenu = __webpack_require__(0);
 
 var _scrollNavigationMenu2 = _interopRequireDefault(_scrollNavigationMenu);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-window.ScrollNavigation = _scrollNavigationMenu2.default;
-exports.default = _scrollNavigationMenu2.default;
+module.exports = __webpack_require__(0).default;
 
 /***/ })
 /******/ ]);
+});
