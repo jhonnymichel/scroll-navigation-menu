@@ -176,7 +176,7 @@ var ScrollNavigation = function () {
       var targetAnchor = anchor.getAttribute('href').split("#")[1];
       var elementToScroll = document.getElementById(targetAnchor);
       var elementBoundaries = elementToScroll.getBoundingClientRect();
-      var elementInitialPosition = elementBoundaries.y + this.settings.offset + (0, _utils.getScrollPosition)();
+      var elementInitialPosition = elementBoundaries.top + this.settings.offset + (0, _utils.getScrollPosition)();
       var elementEndPosition = elementInitialPosition + elementBoundaries.height;
       this._targetsRanges.set(anchor, [elementInitialPosition, elementEndPosition]);
     }
@@ -253,12 +253,12 @@ exports.isScrollInRange = isScrollInRange;
 exports.getScrollPosition = getScrollPosition;
 function isHidden(anchor) {
   var _anchor$getBoundingCl = anchor.getBoundingClientRect(),
-      x = _anchor$getBoundingCl.x,
-      y = _anchor$getBoundingCl.y,
+      left = _anchor$getBoundingCl.left,
+      top = _anchor$getBoundingCl.top,
       width = _anchor$getBoundingCl.width,
       height = _anchor$getBoundingCl.height;
 
-  return !(x + y + width + height);
+  return !(left + top + width + height);
 }
 
 function isScrollInRange(range) {

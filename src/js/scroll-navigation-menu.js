@@ -56,7 +56,7 @@ class ScrollNavigation {
     const targetAnchor = anchor.getAttribute('href').split("#")[1];
     const elementToScroll = document.getElementById(targetAnchor);
     const elementBoundaries = elementToScroll.getBoundingClientRect();
-    const elementInitialPosition = (elementBoundaries.y + this.settings.offset) + getScrollPosition();
+    const elementInitialPosition = (elementBoundaries.top + this.settings.offset) + getScrollPosition();
     const elementEndPosition = elementInitialPosition + elementBoundaries.height;
     this._targetsRanges.set(anchor, [elementInitialPosition, elementEndPosition]);
   }
