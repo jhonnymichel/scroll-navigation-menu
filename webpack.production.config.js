@@ -28,7 +28,7 @@ const productionMinConfig = {
 const productionDemoConfig = {
   ...productionMinConfig,
   plugins: config.plugins,
-  output: { ...config.output, path: path.resolve(__dirname, 'demo') },
+  output: { ...config.output, path: path.resolve(__dirname, 'demo'), publicPath: '' },
 };
 
 module.exports = [
