@@ -1,6 +1,6 @@
 {
   "name": "scroll-navigation-menu",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A library to perform animated scrolling between sections and highlight the active section's <a> tag in the navigation menu",
   "main": "dist/scroll-navigation-menu.js",
   "scripts": {
