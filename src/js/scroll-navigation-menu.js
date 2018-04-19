@@ -55,6 +55,9 @@ class ScrollNavigation {
     // this is needed since the href attr might have more than just the hash
     const targetAnchor = anchor.getAttribute('href').split("#")[1];
     const elementToScroll = document.getElementById(targetAnchor);
+    if(!elementToScroll) {
+      return;
+    }
     const elementBoundaries = elementToScroll.getBoundingClientRect();
     const elementInitialPosition = (elementBoundaries.top + this.settings.offset) + getScrollPosition();
     const elementEndPosition = elementInitialPosition + elementBoundaries.height;
@@ -64,7 +67,7 @@ class ScrollNavigation {
   _setCurrentHighlight() {
     this._anchors.forEach(anchor => {
       const anchorTargetRange = this._targetsRanges.get(anchor);
-      if (isScrollInRange(anchorTargetRange)) {
+      if(anchorTargetRange && isScrollInRange(anchorTargetRange)) {
         this._updateAnchorActiveState(anchor);
       } else {
         this._updateAnchorActiveState(anchor, false);
