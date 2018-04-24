@@ -99,6 +99,11 @@ class ScrollNavigation {
     this._targetsRanges = null;
     this._anchors = null;
   }
+
+  scrollTo(target) {
+    var target = document.querySelector(target);
+    animateScrollTo(target);
+  }
 }
 
 export default ScrollNavigation;
