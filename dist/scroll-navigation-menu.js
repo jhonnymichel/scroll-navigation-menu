@@ -175,6 +175,9 @@ var ScrollNavigation = function () {
       // this is needed since the href attr might have more than just the hash
       var targetAnchor = anchor.getAttribute('href').split("#")[1];
       var elementToScroll = document.getElementById(targetAnchor);
+      if (!elementToScroll) {
+        return;
+      }
       var elementBoundaries = elementToScroll.getBoundingClientRect();
       var elementInitialPosition = elementBoundaries.top + this.settings.offset + (0, _utils.getScrollPosition)();
       var elementEndPosition = elementInitialPosition + elementBoundaries.height;
@@ -187,7 +190,7 @@ var ScrollNavigation = function () {
 
       this._anchors.forEach(function (anchor) {
         var anchorTargetRange = _this2._targetsRanges.get(anchor);
-        if ((0, _utils.isScrollInRange)(anchorTargetRange)) {
+        if (anchorTargetRange && (0, _utils.isScrollInRange)(anchorTargetRange)) {
           _this2._updateAnchorActiveState(anchor);
         } else {
           _this2._updateAnchorActiveState(anchor, false);
@@ -227,6 +230,12 @@ var ScrollNavigation = function () {
       window.removeEventListener('scroll', this._setCurrentHighlight, { passive: true });
       this._targetsRanges = null;
       this._anchors = null;
+    }
+  }, {
+    key: 'scrollTo',
+    value: function scrollTo(target) {
+      var target = document.querySelector(target);
+      (0, _animatedScrollTo2.default)(target);
     }
   }]);
 
@@ -321,7 +330,8 @@ exports.default = {
       maxDuration: 1500,
       cancelOnUserAction: true,
       element: window,
-      onComplete: undefined
+      onComplete: undefined,
+      passive: true
     };
 
     var optionsKeys = Object.keys(options);
@@ -393,18 +403,18 @@ exports.default = {
         removeListeners();
         cancelAnimationFrame(requestID);
       };
-      window.addEventListener('keydown', handleUserEvent);
-      window.addEventListener('mousedown', handleUserEvent);
+      window.addEventListener('keydown', handleUserEvent, { passive: options.passive });
+      window.addEventListener('mousedown', handleUserEvent, { passive: options.passive });
     } else {
       // Set handler to prevent user actions while scroll is active
       handleUserEvent = function handleUserEvent(e) {
         e.preventDefault();
       };
-      window.addEventListener('scroll', handleUserEvent);
+      window.addEventListener('scroll', handleUserEvent, { passive: options.passive });
     }
 
-    window.addEventListener('wheel', handleUserEvent);
-    window.addEventListener('touchstart', handleUserEvent);
+    window.addEventListener('wheel', handleUserEvent, { passive: options.passive });
+    window.addEventListener('touchstart', handleUserEvent, { passive: options.passive });
 
     var removeListeners = function removeListeners() {
       window.removeEventListener('wheel', handleUserEvent);
