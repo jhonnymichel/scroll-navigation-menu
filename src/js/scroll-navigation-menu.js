@@ -100,9 +100,11 @@ class ScrollNavigation {
     this._anchors = null;
   }
 
-  scrollTo(target) {
+  scrollTo(target, options={}) {
     var target = document.querySelector(target);
-    animateScrollTo(target);
+    animateScrollTo(target, {
+      minDuration: this.settings.animationDuration, maxDuration: this.settings.animationDuration, ...options
+    });
   }
 }
 

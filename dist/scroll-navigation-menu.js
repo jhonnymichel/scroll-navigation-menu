@@ -234,8 +234,11 @@ var ScrollNavigation = function () {
   }, {
     key: 'scrollTo',
     value: function scrollTo(target) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
       var target = document.querySelector(target);
-      (0, _animatedScrollTo2.default)(target);
+      (0, _animatedScrollTo2.default)(target, _extends({
+        minDuration: this.settings.animationDuration, maxDuration: this.settings.animationDuration }, options));
     }
   }]);
 
