@@ -112,8 +112,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var ScrollNavigation = function () {
   function ScrollNavigation() {
-    var _this = this;
-
     var settings = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
     _classCallCheck(this, ScrollNavigation);
@@ -123,14 +121,9 @@ var ScrollNavigation = function () {
     this._anchors = [];
 
     this.onAnchorClick = this.onAnchorClick.bind(this);
+    this._setupHighlights = this._setupHighlights.bind(this);
     this._mapAnchorToSectionPosition = this._mapAnchorToSectionPosition.bind(this);
     this._setCurrentHighlight = this._setCurrentHighlight.bind(this);
-
-    window.addEventListener('resize', function () {
-      _this._targetsRanges = new WeakMap();
-      _this._anchors.forEach(_this._mapAnchorToSectionPosition);
-      _this._setCurrentHighlight();
-    });
   }
 
   _createClass(ScrollNavigation, [{
@@ -186,14 +179,14 @@ var ScrollNavigation = function () {
   }, {
     key: '_setCurrentHighlight',
     value: function _setCurrentHighlight() {
-      var _this2 = this;
+      var _this = this;
 
       this._anchors.forEach(function (anchor) {
-        var anchorTargetRange = _this2._targetsRanges.get(anchor);
+        var anchorTargetRange = _this._targetsRanges.get(anchor);
         if (anchorTargetRange && (0, _utils.isScrollInRange)(anchorTargetRange)) {
-          _this2._updateAnchorActiveState(anchor);
+          _this._updateAnchorActiveState(anchor);
         } else {
-          _this2._updateAnchorActiveState(anchor, false);
+          _this._updateAnchorActiveState(anchor, false);
         }
       });
     }
@@ -202,16 +195,18 @@ var ScrollNavigation = function () {
     value: function _setupHighlights() {
       this._targetsRanges = new WeakMap();
       this._anchors.forEach(this._mapAnchorToSectionPosition);
+      window.removeEventListener('scroll', this._setCurrentHighlight, { passive: true });
       window.addEventListener('scroll', this._setCurrentHighlight, { passive: true });
     }
   }, {
     key: 'start',
     value: function start() {
-      var _this3 = this;
+      var _this2 = this;
 
+      window.addEventListener('resize', this._setupHighlights);
       this._anchors = [].concat(_toConsumableArray(document.querySelectorAll(this.settings.linksSelector)));
       this._anchors.forEach(function (anchor) {
-        return anchor.addEventListener('click', _this3.onAnchorClick);
+        return anchor.addEventListener('click', _this2.onAnchorClick);
       });
       this._setupHighlights();
       this._setCurrentHighlight();
@@ -219,14 +214,16 @@ var ScrollNavigation = function () {
   }, {
     key: 'stop',
     value: function stop() {
-      var _this4 = this;
+      var _this3 = this;
 
       if (this._anchors && this._anchors.length) {
         this._anchors.forEach(function (anchor) {
-          anchor.removeEventListener('click', _this4.onAnchorClick);
-          _this4._updateAnchorActiveState(anchor, false);
+          anchor.removeEventListener('click', _this3.onAnchorClick);
+          _this3._updateAnchorActiveState(anchor, false);
         });
       }
+
+      window.removeEventListener('resize', this._setupHighlights);
       window.removeEventListener('scroll', this._setCurrentHighlight, { passive: true });
       this._targetsRanges = null;
       this._anchors = null;

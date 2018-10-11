@@ -9,14 +9,9 @@ class ScrollNavigation {
     this._anchors = [];
 
     this.onAnchorClick = this.onAnchorClick.bind(this);
+    this._setupHighlights = this._setupHighlights.bind(this);
     this._mapAnchorToSectionPosition = this._mapAnchorToSectionPosition.bind(this);
     this._setCurrentHighlight = this._setCurrentHighlight.bind(this);
-
-    window.addEventListener('resize', () => {
-      this._targetsRanges = new WeakMap();
-      this._anchors.forEach(this._mapAnchorToSectionPosition);
-      this._setCurrentHighlight();
-    });
   }
 
   _updateAnchorActiveState(anchor, active=true) {
@@ -78,10 +73,12 @@ class ScrollNavigation {
   _setupHighlights() {
     this._targetsRanges = new WeakMap();
     this._anchors.forEach(this._mapAnchorToSectionPosition);
+    window.removeEventListener('scroll', this._setCurrentHighlight, { passive: true });
     window.addEventListener('scroll', this._setCurrentHighlight, { passive: true });
   }
 
   start() {
+    window.addEventListener('resize', this._setupHighlights);
     this._anchors = [ ...document.querySelectorAll(this.settings.linksSelector) ];
     this._anchors.forEach(anchor => anchor.addEventListener('click', this.onAnchorClick));
     this._setupHighlights();
@@ -95,6 +92,8 @@ class ScrollNavigation {
         this._updateAnchorActiveState(anchor, false);
       });
     }
+
+    window.removeEventListener('resize', this._setupHighlights);
     window.removeEventListener('scroll', this._setCurrentHighlight, { passive: true });
     this._targetsRanges = null;
     this._anchors = null;
